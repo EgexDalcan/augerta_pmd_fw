@@ -21,17 +21,17 @@ uint32_t chipId = 0;
 Adafruit_MCP9808 tempsensor = Adafruit_MCP9808();
 
 //Create current sensor objects
-Adafruit_INA219 cs1(0x40);
-Adafruit_INA219 cs2(0x41);
-Adafruit_INA219 cs3(0x42);
-Adafruit_INA219 cs4(0x4C);
-Adafruit_INA219 cs5(0x44);
-Adafruit_INA219 cs6(0x45);
-Adafruit_INA219 cs7(0x46);
-Adafruit_INA219 cs8(0x4D);
-Adafruit_INA219 cs9(0x48);
-Adafruit_INA219 cs10(0x49);
-Adafruit_INA219 cs11(0x4A);
+Adafruit_INA219 cs1(0x40); //U6
+Adafruit_INA219 cs2(0x41); // U21
+Adafruit_INA219 cs3(0x42); //U11
+Adafruit_INA219 cs4(0x4C);//U18
+Adafruit_INA219 cs5(0x44); //U10
+Adafruit_INA219 cs6(0x45); //U23
+Adafruit_INA219 cs7(0x46);//U15
+Adafruit_INA219 cs8(0x4D);//U7
+Adafruit_INA219 cs9(0x48);//U14
+Adafruit_INA219 cs10(0x49);//U3
+Adafruit_INA219 cs11(0x4A); //U19
 
 
 
