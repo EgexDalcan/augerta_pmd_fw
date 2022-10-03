@@ -33,7 +33,7 @@ Adafruit_INA219 cs9(0x48);//U14
 Adafruit_INA219 cs10(0x49);//U3
 Adafruit_INA219 cs11(0x4A); //U19
 
-
+Adafruit_INA219 currentSensors[]={cs1,cs2,cs3,cs4,cs5,cs6,cs7,cs8,cs9,cs10,cs11};
 
 void setup() {
 	Serial.begin(115200);
@@ -42,45 +42,66 @@ void setup() {
     Serial.println("Couldn't find MCP9808! Check your connections and verify the address is correct.");
     while (1);
   }
-  if (! cs2.begin()) {
-    Serial.println("Failed to fINA219ind cs1 chip");
+  for (byte i=0 ; i < 12; i++){
+  if (! currentSensors[i].begin()) {
+    Serial.println("Failed to find INA219 cs chip:"+(i+1));
     while (1) { delay(10); }
+    
+  }
+  currentSensors[i].setCalibration_16V_400mA();
   }
   Serial.println("found all devices");
-  cs2.setCalibration_16V_400mA();
+  pinMode(23, OUTPUT);
   delay(2000);
 }
 
 void loop() {
 	
   // Read and print out the temperature, also shows the resolution mode used for reading.
-  Serial.print("Resolution in mode: ");
-  Serial.println (tempsensor.getResolution());
+  
   float c = tempsensor.readTempC();
  
   Serial.print("Temp: "); 
-  Serial.print(c, 4); Serial.print("*C\t and "); 
-  
-  
-  delay(2000);
+  Serial.print(c, 4); 
+  Serial.println("*C "); 
   float shuntvoltage = 0;
   float busvoltage = 0;
   float current_mA = 0;
   float loadvoltage = 0;
   float power_mW = 0;
-
-  shuntvoltage = cs2.getShuntVoltage_mV();
-  busvoltage = cs2.getBusVoltage_V();
-  current_mA = cs2.getCurrent_mA();
-  power_mW = cs2.getPower_mW();
-  loadvoltage = busvoltage + (shuntvoltage / 1000);
   
+  delay(4000);
+  for (byte i=0 ; i < 11; i++){
+   shuntvoltage = 0;
+   busvoltage = 0;
+   current_mA = 0;
+  loadvoltage = 0;
+   power_mW = 0;
+
+  shuntvoltage = currentSensors[i].getShuntVoltage_mV();
+  busvoltage = currentSensors[i].getBusVoltage_V();
+  current_mA = currentSensors[i].getCurrent_mA();
+  power_mW = currentSensors[i].getPower_mW();
+  loadvoltage = busvoltage + (shuntvoltage / 1000);
+  Serial.print("Current Sensor ");Serial.print(i+1); Serial.println(":");
   Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
   Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
   Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
   Serial.print("Current:       "); Serial.print(current_mA); Serial.println(" mA");
   Serial.print("Power:         "); Serial.print(power_mW); Serial.println(" mW");
   Serial.println("");
-  delay(200);
+  delay(4000);
+ 
+  }
+  busvoltage = currentSensors[3].getBusVoltage_V();
+  if ( busvoltage < 4) {
+    // turn LED on
+    digitalWrite(23, HIGH);
+    delay(5000);
+    digitalWrite(23, LOW);
+  } else {
+    // turn LED off
+    digitalWrite(23, LOW);
+  }
   
 }
