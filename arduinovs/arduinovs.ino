@@ -19,7 +19,7 @@ void(* resetFunc) (void) = 0;//declare reset function at address 0
 #include <Adafruit_INA219.h>
 
 // Create the  temperature sensor object
-Adafruit_MCP9808 tempsensor = Adafruit_MCP9808();
+//Adafruit_MCP9808 tempsensor = Adafruit_MCP9808();
 
 //Create current sensor objects
 Adafruit_INA219 cs1(0x40); //U6
@@ -39,11 +39,11 @@ Adafruit_INA219 currentSensors[]={cs1,cs2,cs3,cs4,cs5,cs6,cs7,cs8,cs9,cs10,cs11}
 void setup() {
 	Serial.begin(115200);
 
- if (!tempsensor.begin(0x18)) {
+/* if (!tempsensor.begin(0x18)) {
     Serial.println("Couldn't find MCP9808! Check your connections and verify the address is correct.");
     delay(200);
     resetFunc();
-  }
+  }*/
   for (byte i=0 ; i < 12; i++){
   if (! currentSensors[i].begin()) {
     Serial.println("Failed to find INA219 cs chip:"+(i+1));
@@ -62,8 +62,8 @@ void loop() {
 	
   // Read and print out the temperature, also shows the resolution mode used for reading.
   
-  float c = tempsensor.readTempC();
- 
+ // float c = tempsensor.readTempC();
+ float c= 0;
   Serial.print("Temp: "); 
   Serial.print(c, 4); 
   Serial.println("*C "); 
