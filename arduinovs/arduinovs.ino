@@ -11,6 +11,7 @@ created 2020-06-07 by cweinhofer
 with help from Cicicok */
 	
 uint32_t chipId = 0;
+void(* resetFunc) (void) = 0;//declare reset function at address 0
 
 #include <Wire.h>
 #include "Adafruit_MCP9808.h"
@@ -40,12 +41,14 @@ void setup() {
 
  if (!tempsensor.begin(0x18)) {
     Serial.println("Couldn't find MCP9808! Check your connections and verify the address is correct.");
-    while (1);
+    delay(200);
+    resetFunc();
   }
   for (byte i=0 ; i < 12; i++){
   if (! currentSensors[i].begin()) {
     Serial.println("Failed to find INA219 cs chip:"+(i+1));
-    while (1) { delay(10); }
+    delay(200);
+    resetFunc();
     
   }
   currentSensors[i].setCalibration_16V_400mA();
