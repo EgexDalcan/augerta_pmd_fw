@@ -301,4 +301,3 @@ while True:
         break
       else:
         d.dataCollector.ser.readline()
-  time.sleep(dataInterval)
