@@ -30,13 +30,7 @@ class DataCollector:
     self.ser.port = port                                                                          #Sets the port for the connection. Make sure it is set correctly
     self.ser.open()                                                                               #Opens the connection
     self.sensorAmount = sensorAmount                                                              #Sets the amount of sensors connected. Make sure it is set correctly
-    #Checking if the connection is established correctly
-    frstLine = self.ser.readline().decode("UTF-8")
-    if  frstLine == "found all devices\n":
-      print("Connection established!")
-    else:
-      raise Exception("Couldn't find the device or the sensors, check if the port is correct or the connection of the sensors are done correctly!\n Make sure to run this code before sending the data.")
-
+    
   #Gets the time/date for use
   def getTime(self):
     t = time.localtime()
@@ -57,14 +51,16 @@ class DataCollector:
     j = 0
     while j < self.sensorAmount:
       i = 0
-      while i < 6:
+      while i < 7:
         readData = self.ser.readline().decode("UTF-8")
         if "Current Sensor" in readData:
           readData = readData.split(" ")[2]
           self.data.append("")
           self.data.append(readData.split(":")[0])
+        elif readData == "\n":
+          pass
         else:
-          readData = readData.split(": ")[1]
+          readData = readData.split(": ")[1].strip()
           self.data.append(readData.split("\n")[0])
         i = i + 1
       j = j + 1
@@ -239,7 +235,7 @@ class DataInterpreter:
         sensorData = []
         for j in range(len(data)):
           readData = data[j][5 + k + i * 7]
-          sensorData.append(int(readData.split(" ")[0]))
+          sensorData.append(float(readData.split(" ")[0]))
         averages.append(np.average(sensorData))
         i = i + 1
       allAverages.append(averages)
@@ -265,7 +261,7 @@ class DataInterpreter:
         sensorData = []
         for j in range(len(data)):
           readData = data[j][5 + k + i * 7]
-          sensorData.append(int(readData.split(" ")[0]))
+          sensorData.append(float(readData.split(" ")[0]))
           localMax = max(sensorData)
           localMin = min(sensorData)
           localRange = localMax - localMin
@@ -286,18 +282,17 @@ class DataInterpreter:
 d = DataInterpreter(baudrate, port, sensorAmount, dataInterval)
 while True:
   startTime = time.time()
-  d.getData()
   #Makes sure the saved data is up to date
   while True:
     endTime = time.time()
     if(endTime - startTime < dataInterval):
       d.dataCollector.ser.readline()
     else:
-      if("Temp: ".encode("UTF-8") in d.dataCollector.ser.readline()):
+      lineread = d.dataCollector.ser.readline()
+      if("Temp:".encode("UTF-8") in lineread):
         i = 0
-        while i < (sensorAmount * 6):
+        while i < (sensorAmount * 7):
           d.dataCollector.ser.readline()
           i = i + 1
-        break
-      else:
-        d.dataCollector.ser.readline()
+        d.getData()
+        startTime = time.time()
